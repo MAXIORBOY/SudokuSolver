@@ -1,4 +1,3 @@
-import msvcrt as m
 from colorama import Fore, Style, init
 
 init(convert=True)
@@ -186,4 +185,3 @@ class SudokuSolver:
 
 
 SudokuSolver(LoadSudokuBoard().get_user_board()).run()
-m.getch()
