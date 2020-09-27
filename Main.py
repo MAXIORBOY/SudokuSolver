@@ -125,35 +125,38 @@ class SudokuSolver:
         array_backup, assumption_index_backup, assumption_backup = [], [], []
 
         while loop_status:
-            self.possible_numbers_in_the_field_list = self.possible_numbers_in_the_field()
-            loop_status = bool(len(self.possible_numbers_in_the_field_list))
-            if loop_status:
-                if self.check_if_board_is_possible_to_solve():
-                    if self.locate_field_with_only_one_possibility() >= 0:
-                        min_index = self.locate_field_with_only_one_possibility()
-                        self.change_number_on_the_board(self.possible_numbers_in_the_field_list[min_index][0], min_index)
-                    else:
-                        array_backup.append([[el for el in row] for row in self.board])
-                        assumption_index_backup.append(self.locate_the_field_with_the_lowest_amount_of_possibilities())
-                        assumption_backup.append(self.possible_numbers_in_the_field_list[self.locate_the_field_with_the_lowest_amount_of_possibilities()])
-                        self.change_number_on_the_board(assumption_backup[-1][0], assumption_index_backup[-1])
-                else:
-                    del assumption_backup[-1][0]
-                    if len(assumption_backup[-1]):
-                        self.board = array_backup[-1]
-                        self.change_number_on_the_board(assumption_backup[-1][0], assumption_index_backup[-1])
-                    else:
-                        loop_status2 = True
-                        while loop_status2:
-                            del assumption_backup[-1]
-                            del assumption_backup[-1][0]
-                            del assumption_index_backup[-1]
-                            del array_backup[-1]
-                            loop_status2 = not (bool(len(assumption_backup[-1])))
+			try:
+				self.possible_numbers_in_the_field_list = self.possible_numbers_in_the_field()
+				loop_status = bool(len(self.possible_numbers_in_the_field_list))
+				if loop_status:
+					if self.check_if_board_is_possible_to_solve():
+						if self.locate_field_with_only_one_possibility() >= 0:
+							min_index = self.locate_field_with_only_one_possibility()
+							self.change_number_on_the_board(self.possible_numbers_in_the_field_list[min_index][0], min_index)
+						else:
+							array_backup.append([[el for el in row] for row in self.board])
+							assumption_index_backup.append(self.locate_the_field_with_the_lowest_amount_of_possibilities())
+							assumption_backup.append(self.possible_numbers_in_the_field_list[self.locate_the_field_with_the_lowest_amount_of_possibilities()])
+							self.change_number_on_the_board(assumption_backup[-1][0], assumption_index_backup[-1])
+					else:
+						del assumption_backup[-1][0]
+						if len(assumption_backup[-1]):
+							self.board = array_backup[-1]
+							self.change_number_on_the_board(assumption_backup[-1][0], assumption_index_backup[-1])
+						else:
+							loop_status2 = True
+							while loop_status2:
+								del assumption_backup[-1]
+								del assumption_backup[-1][0]
+								del assumption_index_backup[-1]
+								del array_backup[-1]
+								loop_status2 = not (bool(len(assumption_backup[-1])))
 
-                        self.board = array_backup[-1]
-                        self.change_number_on_the_board(assumption_backup[-1][0], assumption_index_backup[-1])
-
+							self.board = array_backup[-1]
+							self.change_number_on_the_board(assumption_backup[-1][0], assumption_index_backup[-1])
+			except:
+				print('The fixed points in the Sudoku board are incorrect!')
+				
         return self.format_output()
 
     def format_output(self):
