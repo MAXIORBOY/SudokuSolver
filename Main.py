@@ -1,6 +1,4 @@
-from colorama import Fore, Style, init
-
-init(convert=True)
+import matplotlib.pyplot as plt
 
 
 class LoadSudokuBoard:
@@ -49,8 +47,11 @@ class LoadSudokuBoard:
 class SudokuSolver:
     def __init__(self, board):
         self.board = board
-        self.old_board = [[el for el in row] for row in self.board]
+        self.old_board = None
         self.possible_numbers_in_the_field_list = None
+
+    def set_old_board(self):
+        self.old_board = [[el for el in row] for row in self.board]
 
     @staticmethod
     def internal_square_index_position(index_table):
@@ -121,70 +122,75 @@ class SudokuSolver:
         return minimum_index
 
     def main(self):
+        if self.board is not None:
+            self.set_old_board()
+        else:
+            print('Invalid board')
+            return None
+
         loop_status = True
         array_backup, assumption_index_backup, assumption_backup = [], [], []
 
         while loop_status:
-			try:
-				self.possible_numbers_in_the_field_list = self.possible_numbers_in_the_field()
-				loop_status = bool(len(self.possible_numbers_in_the_field_list))
-				if loop_status:
-					if self.check_if_board_is_possible_to_solve():
-						if self.locate_field_with_only_one_possibility() >= 0:
-							min_index = self.locate_field_with_only_one_possibility()
-							self.change_number_on_the_board(self.possible_numbers_in_the_field_list[min_index][0], min_index)
-						else:
-							array_backup.append([[el for el in row] for row in self.board])
-							assumption_index_backup.append(self.locate_the_field_with_the_lowest_amount_of_possibilities())
-							assumption_backup.append(self.possible_numbers_in_the_field_list[self.locate_the_field_with_the_lowest_amount_of_possibilities()])
-							self.change_number_on_the_board(assumption_backup[-1][0], assumption_index_backup[-1])
-					else:
-						del assumption_backup[-1][0]
-						if len(assumption_backup[-1]):
-							self.board = array_backup[-1]
-							self.change_number_on_the_board(assumption_backup[-1][0], assumption_index_backup[-1])
-						else:
-							loop_status2 = True
-							while loop_status2:
-								del assumption_backup[-1]
-								del assumption_backup[-1][0]
-								del assumption_index_backup[-1]
-								del array_backup[-1]
-								loop_status2 = not (bool(len(assumption_backup[-1])))
+            try:
+                self.possible_numbers_in_the_field_list = self.possible_numbers_in_the_field()
+                loop_status = bool(len(self.possible_numbers_in_the_field_list))
+                if loop_status:
+                    if self.check_if_board_is_possible_to_solve():
+                        if self.locate_field_with_only_one_possibility() >= 0:
+                            min_index = self.locate_field_with_only_one_possibility()
+                            self.change_number_on_the_board(self.possible_numbers_in_the_field_list[min_index][0], min_index)
+                        else:
+                            array_backup.append([[el for el in row] for row in self.board])
+                            assumption_index_backup.append(self.locate_the_field_with_the_lowest_amount_of_possibilities())
+                            assumption_backup.append(self.possible_numbers_in_the_field_list[self.locate_the_field_with_the_lowest_amount_of_possibilities()])
+                            self.change_number_on_the_board(assumption_backup[-1][0], assumption_index_backup[-1])
+                    else:
+                        del assumption_backup[-1][0]
+                        if len(assumption_backup[-1]):
+                            self.board = array_backup[-1]
+                            self.change_number_on_the_board(assumption_backup[-1][0], assumption_index_backup[-1])
+                        else:
+                            loop_status2 = True
+                            while loop_status2:
+                                del assumption_backup[-1]
+                                del assumption_backup[-1][0]
+                                del assumption_index_backup[-1]
+                                del array_backup[-1]
+                                loop_status2 = not (bool(len(assumption_backup[-1])))
 
-							self.board = array_backup[-1]
-							self.change_number_on_the_board(assumption_backup[-1][0], assumption_index_backup[-1])
-			except:
-				print('The fixed points in the Sudoku board are incorrect!')
-				
+                            self.board = array_backup[-1]
+                            self.change_number_on_the_board(assumption_backup[-1][0], assumption_index_backup[-1])
+            except:
+                print('The fixed points in the Sudoku board are incorrect!')
+
         return self.format_output()
 
-    def format_output(self):
-        line = f'{Style.BRIGHT}'
-        line += '-------------------------'
+    def format_output(self, cell_dimension=0.1):
+        cell_text = [[str(el) for el in row] for row in self.board]
+        final_board = plt.table(cell_text, loc='center', rowLoc='center', colLoc='center', cellLoc='center')
+
+        cell_dict = final_board.get_celld()
         for i in range(len(self.board)):
-            if i % 3 == 0:
-                print(line)
-            string = f'{Style.BRIGHT}'
-            for j in range(len(self.board[0])):
-                if not j:
-                    string += '| '
+            for j in range(len(self.board[i])):
+                cell_dict[(i, j)].set_height(cell_dimension)
+                cell_dict[(i, j)].set_width(cell_dimension)
                 if not self.old_board[i][j]:
-                    string += str(f'{Fore.BLUE}' + str(self.board[i][j]) + f'{Fore.RESET}')
+                    cell_dict[(i, j)].get_text().set_color('blue')
                 else:
-                    string += str(f'{Fore.WHITE}' + str(self.board[i][j]) + f'{Fore.RESET}')
-                if (j + 1) % 3 == 0:
-                    string += ' | '
-                else:
-                    string += ' '
-            print(string)
-        print(line)
+                    cell_dict[(i, j)].get_text().set_color('black')
 
-    def run(self):
-        if self.board is not None:
-            return self.main()
-        else:
-            print('Invalid board')
+        final_board.auto_set_font_size(False)
+        final_board.set_fontsize(20)
+        ax = plt.gca()
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
+        for i in range(4):
+            ax.axhline(xmin=cell_dimension / 2, xmax=1 - cell_dimension / 2, y=3 * i * cell_dimension + cell_dimension / 2, linewidth=3, color='black')
+            ax.axvline(ymin=cell_dimension / 2, ymax=1 - cell_dimension / 2, x=3 * i * cell_dimension + cell_dimension / 2, linewidth=3, color='black')
+
+        plt.box(on=None)
+        plt.show()
 
 
-SudokuSolver(LoadSudokuBoard().get_user_board()).run()
+SudokuSolver(LoadSudokuBoard().get_user_board()).main()
