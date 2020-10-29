@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import tkinter as tk
 from tkinter import messagebox
+import random
 
 
 class LoadSudokuGrid:
@@ -9,18 +10,22 @@ class LoadSudokuGrid:
         self.grid = self.load_data_from_text_file()
 
     def load_data_from_text_file(self):
-        root = tk.Tk()
-        root.withdraw()
         try:
             f = open(self.file_name, 'r')
         except:
+            root = tk.Tk()
+            root.withdraw()
             messagebox.showerror('Error!', 'Unable to open ' + self.file_name + ' file!\nThe file was renamed, moved or deleted!')
+            root.destroy()
             return None
 
         grid = f.read().split('\n')
 
         if not self.check_user_input_correctness(grid):
+            root = tk.Tk()
+            root.withdraw()
             messagebox.showerror('Error!', 'Your Sudoku grid is incorrect!\nThe grid size is wrong and/or the grid contains a forbidden character!')
+            root.destroy()
             return None
 
         f.close()
@@ -41,9 +46,6 @@ class LoadSudokuGrid:
             return False
 
         return True
-
-    def get_user_grid(self):
-        return self.grid
 
 
 class SudokuSolver:
@@ -124,12 +126,13 @@ class SudokuSolver:
         return minimum_index
 
     def main(self):
-        root = tk.Tk()
-        root.withdraw()
         if self.grid is not None:
             self.set_old_grid()
         else:
+            root = tk.Tk()
+            root.withdraw()
             messagebox.showerror('Error!', 'Invalid grid!')
+            root.destroy()
             return None
 
         loop_status = True
@@ -147,7 +150,9 @@ class SudokuSolver:
                         else:
                             array_backup.append([[el for el in row] for row in self.grid])
                             assumption_index_backup.append(self.locate_the_field_with_the_lowest_amount_of_possibilities())
-                            assumption_backup.append(self.possible_numbers_in_the_field_list[self.locate_the_field_with_the_lowest_amount_of_possibilities()])
+                            field_possible_numbers = self.possible_numbers_in_the_field_list[self.locate_the_field_with_the_lowest_amount_of_possibilities()]
+                            random.shuffle(field_possible_numbers)
+                            assumption_backup.append(field_possible_numbers)
                             self.change_number_on_the_grid(assumption_backup[-1][0], assumption_index_backup[-1])
                     else:
                         del assumption_backup[-1][0]
@@ -166,10 +171,13 @@ class SudokuSolver:
                             self.grid = array_backup[-1]
                             self.change_number_on_the_grid(assumption_backup[-1][0], assumption_index_backup[-1])
             except:
+                root = tk.Tk()
+                root.withdraw()
                 messagebox.showerror('Error!', 'The clues, given in your Sudoku grid, are incorrect!\n')
+                root.destroy()
                 return None
 
-        return self.format_output()
+        self.format_output()
 
     def format_output(self, cell_dimension=0.1):
         cell_text = [[str(el) for el in row] for row in self.grid]
