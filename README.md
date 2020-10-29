@@ -6,7 +6,7 @@ Used method: Proof by contradiction
 An executable (.exe) version is available in the Release folder
 
 
-Example input:
+Example input:  
 005481009  
 000000000  
 089000052  
