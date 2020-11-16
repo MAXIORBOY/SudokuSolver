@@ -1,10 +1,11 @@
 # Sudoku Solver is a program used for solving any (classic) Sudoku grid.
+## Idea:
+(...)   
+
+## Launch:
 Rewrite numbers from a grid into sudoku.txt file and launch the program (or the script). An empty field is being represented by zero. Do not use comma, space or any other separators.
-
-Used method: Proof by contradiction
-
-An executable (.exe) version is available in the Release folder
-
+* Launch the ```RUN.py``` script.
+* An executable (.exe) version is available in the ```Release``` folder
 
 Example input:  
 005481009  
@@ -15,4 +16,8 @@ Example input:
 002000001  
 004632007  
 037000064  
-000000000  
+000000000
+
+## Technology: 
+* ```Python``` 3.8
+* ```matplotlib``` 3.3.2
