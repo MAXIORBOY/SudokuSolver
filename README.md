@@ -7,8 +7,7 @@
 If at any time (after making an assumption) there is an empty field without any possibility, rollback the grid to the previous assumption, and make another one.  
 
 ## Launch:
-Rewrite numbers from a grid into the ```sudoku.txt``` file and launch the program. An empty field is being represented by zero. Do not use comma, space or any other separators. You can find a valid example in the ```sudoku.txt``` file.
-* Launch the ```RUN.py``` script.
+Rewrite numbers from a grid into the ```sudoku.txt``` file and launch the program. An empty field is being represented by zero. Do not use comma, space or any other separators. Then launch the ```RUN.py``` script. You can find a valid example in the ```sudoku.txt``` file.
 
 ## Technology: 
 * ```Python``` 3.8
