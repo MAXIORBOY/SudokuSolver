@@ -9,7 +9,6 @@ If at any time (after making an assumption) there is an empty field without any 
 ## Launch:
 Rewrite numbers from a grid into the ```sudoku.txt``` file and launch the program. An empty field is being represented by zero. Do not use comma, space or any other separators. You can find a valid example in the ```sudoku.txt``` file.
 * Launch the ```RUN.py``` script.
-* An executable (.exe) version is available in the ```Release``` folder.
 
 ## Technology: 
 * ```Python``` 3.8
